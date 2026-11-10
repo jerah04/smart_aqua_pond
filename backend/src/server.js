@@ -9,7 +9,7 @@ app.use(express.json());
 
 const demoDashboard = {
   pond: { id: 1, name: 'Pond Alpha', species: 'Nile Tilapia', volume_liters: 12000, status: 'healthy' },
-  readings: { temperature_c: 27.4, ph: 7.3, dissolved_oxygen_mg_l: 6.8, ammonia_mg_l: 0.12, turbidity_ntu: 18.5, recorded_at: new Date().toISOString() },
+  readings: { temperature_c: 27.4, ph: 7.3, ammonia_mg_l: 0.12, turbidity_ntu: 18.5, recorded_at: new Date().toISOString() },
   devices: [{ device_key: 'aerator', label: 'Pond aerator', is_enabled: true }, { device_key: 'pump', label: 'Water circulation pump', is_enabled: false }],
   alerts: [{ id: 1, severity: 'warning', category: 'Fish health', message: 'Camera review recommended: unusual surface activity detected.', created_at: new Date().toISOString() }]
 };

@@ -15,7 +15,6 @@ This document defines the requirements for the current prototype and the interfa
 - Monitoring essential pond water parameters:
   - Water temperature
   - pH
-  - Dissolved oxygen
   - Water turbidity
 - Pond and fish-species information
 - Recent sensor-reading history
@@ -68,7 +67,6 @@ The system shall store timestamped readings for:
 
 - Temperature in degrees Celsius
 - pH
-- Dissolved oxygen in milligrams per liter
 - Turbidity in NTU
 
 The dashboard shall show the latest available value for each parameter and indicate when the value was recorded.
@@ -247,7 +245,7 @@ The backend shall expose a health endpoint and log server-side errors sufficient
 The prototype is acceptable when:
 
 1. The dashboard loads a pond profile and latest supported water readings.
-2. Temperature, pH, dissolved oxygen, and turbidity are visible with units.
+2. Temperature, pH, and turbidity are visible with units.
 3. Recent unresolved fish-health or habitat alerts are visible with severity.
 4. Camera availability is clearly represented, including an unavailable or simulated state.
 5. Aerator and pump controls validate requests and update prototype database state.

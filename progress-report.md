@@ -89,7 +89,7 @@ The source code and API implementation provide the following prototype functiona
 
 - Pond profile containing name, fish species, volume, and status
 - Dashboard water-quality display structure
-- Temperature, pH, dissolved oxygen, and turbidity data fields in the requirements and interface model
+- Temperature, pH, and turbidity data fields in the requirements and interface model
 - Recent sensor-reading API route
 - Fish-health and habitat monitoring section in the frontend
 - Camera-status placeholder and fish behavior alert presentation
@@ -156,7 +156,6 @@ The application requirements should remain limited to:
 
 - Temperature
 - pH
-- Dissolved oxygen
 - Turbidity
 
 No ammonia sensor, metric, alert, threshold, automation, or API field should be added.

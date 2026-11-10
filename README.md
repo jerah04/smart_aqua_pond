@@ -33,45 +33,53 @@ C:\xampp\htdocs\repos\smart_aqua_pond
 ## 2. Set up MySQL
 Open MySQL Workbench and run `backend/database/schema.sql`. This creates `smart_aqua_pond` and starter tables/data.
 
-## 3. Start the backend (PowerShell)
-Open a terminal and run:
+## 3. Install dependencies once (PowerShell)
+The project uses npm workspaces, so there is one shared dependency directory at the project root. Do not run `npm install` separately inside `backend` or `frontend`.
 
 ```powershell
-Set-Location "C:\xampp\htdocs\repos\smart_aqua_pond\backend"
-Copy-Item .env.example .env -Force
+Set-Location "C:\xampp\htdocs\repos\smart_aqua_pond"
 npm install
-npm run dev
 ```
 
 If PowerShell reports `Could not determine Node.js install directory` for `npm`, use `npm.cmd` instead:
 
 ```powershell
 npm.cmd install
-npm.cmd run dev
+```
+
+The application has safe defaults for local development, so `.env` files are optional. Copy the example files only when you need custom database credentials or API settings.
+
+## 4. Start the backend (PowerShell)
+From the project root, open one terminal and run:
+
+```powershell
+Set-Location "C:\xampp\htdocs\repos\smart_aqua_pond"
+npm run dev:backend
+```
+
+If needed:
+
+```powershell
+npm.cmd run dev:backend
 ```
 
 API runs at `http://localhost:4000`. Check `http://localhost:4000/api/health`.
 
-If your local MySQL user has no password, keep `DB_PASSWORD=` empty in `.env`.
-
-## 4. Start the frontend (PowerShell)
-In another terminal:
+## 5. Start the frontend (PowerShell)
+From the project root, open another terminal and run:
 
 ```powershell
-Set-Location "C:\xampp\htdocs\repos\smart_aqua_pond\frontend"
-Copy-Item .env.local.example .env.local -Force
-npm install
-npm run dev
+Set-Location "C:\xampp\htdocs\repos\smart_aqua_pond"
+npm run dev:frontend
 ```
 
-If needed, use `npm.cmd`:
+If needed:
 
 ```powershell
-npm.cmd install
-npm.cmd run dev
+npm.cmd run dev:frontend
 ```
 
-Open `http://localhost:3000`. 
+Open `http://localhost:3000`.
 
 Do not run commands from the old nested path because that directory no longer exists.
 

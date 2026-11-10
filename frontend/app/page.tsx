@@ -9,14 +9,14 @@ import {
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
-type Reading = { temperature_c: number; ph: number; dissolved_oxygen_mg_l: number; ammonia_mg_l: number; turbidity_ntu: number; recorded_at: string };
+type Reading = { temperature_c: number; ph: number; ammonia_mg_l: number; turbidity_ntu: number; recorded_at: string };
 type Device = { device_key: "aerator" | "pump"; label: string; is_enabled: boolean };
 type AlertItem = { id: number; severity: string; category: string; message: string; created_at: string };
 type Dashboard = { pond: { id: number; name: string; species: string; volume_liters: number; status: string }; readings: Reading; devices: Device[]; alerts: AlertItem[] };
 
 const demo: Dashboard = {
   pond: { id: 1, name: "Pond Alpha", species: "Nile Tilapia", volume_liters: 12000, status: "healthy" },
-  readings: { temperature_c: 27.4, ph: 7.3, dissolved_oxygen_mg_l: 6.8, ammonia_mg_l: 0.12, turbidity_ntu: 18.5, recorded_at: new Date().toISOString() },
+  readings: { temperature_c: 27.4, ph: 7.3, ammonia_mg_l: 0.12, turbidity_ntu: 18.5, recorded_at: new Date().toISOString() },
   devices: [{ device_key: "aerator", label: "Pond aerator", is_enabled: true }, { device_key: "pump", label: "Water circulation pump", is_enabled: false }],
   alerts: [{ id: 1, severity: "warning", category: "Fish health", message: "Unusual surface activity detected. Review camera feed and fish behavior.", created_at: new Date().toISOString() }]
 };
@@ -109,9 +109,8 @@ export default function Home() {
         {notice && <div className="mt-5 flex items-start justify-between gap-3 rounded-xl border border-ocean-100 bg-white px-4 py-3 text-sm text-slate-600 shadow-soft"><span>{notice}</span><button onClick={() => setNotice("")} aria-label="Dismiss notice"><X size={16}/></button></div>}
 
         <section id="water" className="mt-8"><div className="mb-4 flex items-center justify-between"><div><h2 className="font-semibold text-slate-800">Water quality</h2><p className="mt-1 text-xs text-slate-400">Essential parameters ┬╖ Updated {lastUpdated}</p></div><span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700"><CheckCircle2 size={14}/> Within target range*</span></div>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             <Metric title="Water temperature" value={Number(r.temperature_c).toFixed(1)} unit="┬░C" icon={Thermometer} note="Typical warm-water range" />
-            <Metric title="Dissolved oxygen" value={Number(r.dissolved_oxygen_mg_l).toFixed(1)} unit="mg/L" icon={Wind} note="Oxygen availability" tone="blue"/>
             <Metric title="pH level" value={Number(r.ph).toFixed(1)} unit="pH" icon={Gauge} note="Acidity / alkalinity" />
             <Metric title="Ammonia" value={Number(r.ammonia_mg_l).toFixed(2)} unit="mg/L" icon={Activity} note="Monitor for toxic buildup" tone="amber"/>
           </div><p className="mt-3 text-[11px] text-slate-400">*Indicative demo status only. Acceptable ranges vary by species and life stage; validate against local aquaculture guidance.</p>
@@ -131,7 +130,7 @@ export default function Home() {
           <section id="controls" className="rounded-2xl border border-slate-100 bg-white p-5 shadow-soft md:p-6">
             <div className="flex items-start justify-between"><div><h2 className="font-semibold text-slate-800">Device controls</h2><p className="mt-1 text-xs text-slate-400">Manual controls for connected equipment</p></div><span className="rounded-xl bg-ocean-100 p-2.5 text-ocean-700"><Zap size={19}/></span></div>
             <div className="mt-5 space-y-3">
-              {[{ key: "aerator" as const, name: "Pond aerator", desc: "Supports dissolved oxygen", icon: Wind }, { key: "pump" as const, name: "Circulation pump", desc: "Moves and circulates water", icon: RefreshCw }].map(item => {
+              {[{ key: "aerator" as const, name: "Pond aerator", desc: "Improves water circulation", icon: Wind }, { key: "pump" as const, name: "Circulation pump", desc: "Moves and circulates water", icon: RefreshCw }].map(item => {
                 const on = devices(item.key);
                 return <div key={item.key} className="flex items-center gap-3 rounded-xl border border-slate-100 p-4"><div className={`rounded-xl p-3 ${on ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500"}`}><item.icon size={19}/></div><div className="min-w-0 flex-1"><div className="text-sm font-semibold text-slate-700">{item.name}</div><div className="mt-1 text-xs text-slate-400">{item.desc}</div><div className={`mt-2 text-[10px] font-bold uppercase tracking-wider ${on ? "text-emerald-600" : "text-slate-400"}`}>{on ? "Running" : "Standby"}</div></div><button disabled={busy === item.key} onClick={() => toggleDevice(item.key, !on)} className={`flex h-10 w-10 items-center justify-center rounded-full transition disabled:opacity-50 ${on ? "bg-emerald-500 text-white hover:bg-emerald-600" : "bg-slate-100 text-slate-500 hover:bg-slate-200"}`} aria-label={`${on ? "Turn off" : "Turn on"} ${item.name}`}><Power size={17}/></button></div>;
               })}

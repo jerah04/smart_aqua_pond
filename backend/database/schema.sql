@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS sensor_readings (
   pond_id INT NOT NULL,
   temperature_c DECIMAL(5,2) NOT NULL,
   ph DECIMAL(4,2) NOT NULL,
-  dissolved_oxygen_mg_l DECIMAL(5,2) NOT NULL,
   ammonia_mg_l DECIMAL(6,3) NOT NULL DEFAULT 0,
   turbidity_ntu DECIMAL(7,2) NOT NULL DEFAULT 0,
   recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -59,8 +58,8 @@ INSERT INTO ponds (id, name, species, volume_liters, status)
 VALUES (1, 'Pond Alpha', 'Nile Tilapia', 12000, 'healthy')
 ON DUPLICATE KEY UPDATE name=VALUES(name);
 
-INSERT INTO sensor_readings (pond_id, temperature_c, ph, dissolved_oxygen_mg_l, ammonia_mg_l, turbidity_ntu)
-SELECT 1, 27.4, 7.3, 6.8, 0.12, 18.5
+INSERT INTO sensor_readings (pond_id, temperature_c, ph, ammonia_mg_l, turbidity_ntu)
+SELECT 1, 27.4, 7.3, 0.12, 18.5
 WHERE NOT EXISTS (SELECT 1 FROM sensor_readings WHERE pond_id=1);
 
 INSERT INTO alerts (pond_id, severity, category, message)

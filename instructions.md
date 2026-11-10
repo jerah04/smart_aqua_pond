@@ -29,7 +29,7 @@ The ammonia sensor feature is intentionally excluded from this project. Do not a
 - Ammonia dashboard metrics, alerts, thresholds, or automation
 - Ammonia-related acceptance criteria or user instructions
 
-When extending water-quality monitoring, use only the supported parameters defined in `requirements.md`: temperature, pH, dissolved oxygen, and turbidity.
+When extending water-quality monitoring, use only the supported parameters defined in `requirements.md`: temperature, pH, and turbidity.
 
 ## Prototype and safety rules
 
