@@ -1,62 +1,72 @@
-# SMART Aqua Pond — Initial Prototype
+# SMART Aqua Pond: Marine Ecosystem Monitoring System
 
-A modern, minimalistic full-stack prototype for monitoring aquaculture ponds.
+Full-stack web application and hardware telemetry gateway for the **SMART Aqua Pond** project (**University of Eastern Philippines — College of Science**).
 
-## Stack
-- Frontend: Next.js App Router, TypeScript, Tailwind CSS, lucide-react
-- Backend: Node.js, Express, mysql2
-- Database: MySQL (manage it with MySQL Workbench)
+---
 
-## Prototype features
-- Pond overview with water-quality indicators and status
-- Fish health/stress alerts (prototype/demo data; camera AI is not connected)
-- Sensor readings and recent history
-- Manual aerator/pump controls and feeder action
-- API health endpoint and REST endpoints
-- SQL schema and optional seed data
+## 🛠️ Technology & Hardware Stack
 
-> Important: This is a software prototype. Sensor values and AI stress classifications are simulated unless you connect real hardware and a validated computer-vision model. Do not rely on the demo's automatic recommendations as veterinary or water-quality advice.
+- **Primary Controller:** Arduino Uno R4 WiFi (Renesas RA4M1 32-bit + ESP32-S3)
+- **Secondary Controller:** ESP32-CAM (OV2640 2MP + ESP32-CAM-MB + BlueWow 37mm CPL Polarizing Filter)
+- **Frontend:** Next.js 14 (App Router), TypeScript, Tailwind CSS, `lucide-react`
+- **Backend:** Node.js, Express.js, `mysql2/promise` (with optional `serialport` USB listener & `/api/telemetry` HTTP bridge)
+- **Database:** MySQL 8+ (MySQL Workbench)
 
-## 1. Requirements
-- Node.js 20+
-- MySQL 8+
-- npm
+---
 
-## 2. Set up MySQL
-Open MySQL Workbench and run `database/schema.sql`. This creates `smart_aqua_pond` and starter tables/data.
+## 📌 Hardware Pin Mapping & Database Alignment
 
-## 3. Start the backend
+| Hardware Component | Model / Specification | Arduino Pin | Database Column / Key |
+| :--- | :--- | :--- | :--- |
+| **Main Tank Water Temp** | Waterproof DS18B20 Probe #1 | **Pin D2** | `sensor_readings.temperature_c` |
+| **Reservoir Water Temp** | Waterproof DS18B20 Probe #2 | **Pin D3** | `sensor_readings.reservoir_temp_c` |
+| **pH Sensor** | PH-4502C + BNC Glass Electrode | **Pin A0** | `sensor_readings.ph` |
+| **TDS Sensor** | Gravity Analog TDS V1.0 | **Pin A1** | `sensor_readings.tds_ppm` |
+| **Turbidity Sensor** | TS-300B Optical Probe | **Pin A2** | `sensor_readings.turbidity_ntu` & `turbidity_voltage` |
+| **Water Level Sensor** | JSN-SR04T Waterproof Ultrasonic | **Pins D7, D8** | `sensor_readings.water_level_cm` & `water_level_pct` |
+| **Drain Pump** | 12V Brushless Submersible (3L/min) | **Relay CH1 (Pin D4)** | `devices.device_key = 'drain_pump'` |
+| **Refill Pump** | 12V Brushless Submersible (3L/min) | **Relay CH2 (Pin D5)** | `devices.device_key = 'refill_pump'` |
+| **Aerator Pump** | 12V Mini Diaphragm Air Pump | **Relay CH3 (Pin D6)** | `devices.device_key = 'aerator'` |
+| **Automated Fish Feeder** | TowerPro MG996R Metal Gear Servo | **Pin D9 (PWM)** | `feeding_events` table |
+| **Ammonia, Nitrite, Nitrate** | Pending Physical Water-Testing Kits | *Manual Input* | `ammonia_mg_l`, `nitrite_mg_l`, `nitrate_mg_l` |
+
+---
+
+## 🚀 Step-by-Step Setup Guide
+
+### 1. Set Up the MySQL Database (MySQL Workbench)
+1. Open **MySQL Workbench** and connect to your local MySQL server (`localhost:3306`).
+2. Open and execute `database/schema.sql`.
+3. This creates the `smart_aqua_pond` database with `ponds`, `sensor_readings`, `devices`, `alerts`, and `feeding_events`.
+
+### 2. Start the Node.js + Express Backend
 ```bash
 cd backend
 cp .env.example .env
-# Update DB credentials in .env
+# Edit .env and set your MySQL DB_PASSWORD (and optional ARDUINO_PORT=COM3)
 npm install
 npm run dev
 ```
-API runs at `http://localhost:4000`. Check `http://localhost:4000/api/health`.
+- The API runs at `http://localhost:4000`.
+- Verify health at `http://localhost:4000/api/health`.
 
-If your local MySQL user has no password, set `DB_PASSWORD=` in `.env`.
-
-## 4. Start the frontend
-In another terminal:
+### 3. Start the Next.js + Tailwind CSS Frontend
+In a second terminal:
 ```bash
 cd frontend
 cp .env.local.example .env.local
 npm install
 npm run dev
 ```
-Open `http://localhost:3000`.
+- Open `http://localhost:3000` in your browser.
 
-## API endpoints
-- `GET /api/health`
-- `GET /api/dashboard`
-- `GET /api/ponds`
-- `GET /api/ponds/:id/readings`
-- `GET /api/alerts`
-- `POST /api/controls` — `{ "device": "aerator"|"pump", "enabled": true|false }`
-- `POST /api/feeder` — `{ "amountGrams": 50 }`
+---
 
-## Architecture notes
-- The frontend falls back to clearly labeled demo data if the backend is unavailable.
-- The current controls update the prototype database state only. Real actuators require a device gateway (for example, ESP32/MQTT) and safe hardware interlocks.
-- For production, add authentication, authorization, audit logs, input validation, rate limits, TLS, and hardware fail-safes.
+## 📡 API Endpoints
+
+- `GET /api/health` — Checks MySQL connection and Arduino Uno R4 WiFi telemetry status.
+- `GET /api/dashboard` — Loads pond profile, latest 6-sensor readings, 3 relay states, feeder logs, and alerts.
+- `POST /api/controls` — Controls individual relays (`drain_pump`, `refill_pump`, `aerator`) or triggers `WATER_CHANGE` / `STOP` on the Arduino.
+- `POST /api/feeder` — Triggers the **MG996R Servo (Pin D9)** and records the feed weight in MySQL.
+- `POST /api/telemetry` — Ingests real-time JSON from the Arduino Uno R4 WiFi and returns queued actuator commands.
+- `POST /api/chemical-test` — Logs manual water-testing kit results for Ammonia, Nitrite, and Nitrate.
