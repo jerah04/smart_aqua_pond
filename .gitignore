@@ -1,7 +1,7 @@
-**/node_modules/
 **/.next/
 **/~$*
 **/frontend.zip
 **/.env
 **/.env.local
 **/*.tsbuildinfo
+**/next-swc.win32-x64-msvc.node
